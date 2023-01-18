@@ -1,6 +1,6 @@
 --Veterinary clinic Data wrangling
 
-Skills used: Joins, Creating Views, 
+Skills used: Joins, Creating Views, String functions, CAST function, Aggregate function and User Defined Functions
 
 --STEP 1--Create a view containing all information in the Client Table
 CREATE VIEW CLIENT AS
