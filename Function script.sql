@@ -1,82 +1,5 @@
----Automate OLE Automation Procedures
-Exec sp_configure 'show advanced options', 1
-Go
-reconfigure
-Go
-exec sp_configure 'Ole Automation Procedures', 1--Enable
---exec sp_configure 'Ole Automation Procedures', 0
-Go
-reconfigure
-Go
-exec sp_configure 'show advanced options', 0
-Go
-reconfigure
-Go
-
-
-if (Object_id('dbo.fns') IS NOT NULL)
-Begin 
-Drop Function dbo.fns
-End
-Go
-Create Function dbo.fns
-(
-@string varchar(8000)
-)
-returns varchar(8000)
-AS
-BEGIN
-declare @text varchar(8000),
-@PenDown Char(1),
-@Char Char(1),
-@len int,
-@count int
-select @count = 0,
-@len = 0,
-@text = ''
-
-select @string = '>' + @string +'<'
-select @len = len(@string)
-while (@count <=@len)
-begin
-select @char = substring(@string,@count,1)
-
-if (@char = '>')
-select @PenDown= 'N'
-else
-if (@PenDown = 'Y')
-select @text = @text + @char
-
-select @count = @count + 1
-end
-
-RETURN @text
-END
-GO
-
-
-using system.data.sqltypes;
-using itenso.rtf.converter.Text;
-using itenso.rtf.support;
-
-public partial class StoredProcedures
-{
-[Microsoft.Sqlserer.Server.sqlfunction]
-public static sqlstring RtfToPlainText(SqlString text)
-{	
-if (text.Value.StartWith(@'{\rtf'))
-{
-RtfTextConverter textConverter = new RtfTextConverter();
-RtfInterpreterTool.Interpret(text.Value, textConverter);
-return textConverter.PlainText;
-}
-else
-return text;
-}
-}
-
-Drop function dbo.getnumeric
-Create function dbo.getnumeric---to get numbers only
+--Function one---Create a function to extract numbers from a column
+Create function dbo.getnumeric
 (
 @strAlphaNumeric VARCHAR(200)
 )
@@ -96,7 +19,7 @@ RETURN ISNULL(@strAlphaNumeric, 0)
 END
 GO
 
-Drop Function dbo.fn_getAlphabet
+--Function 2--Create a function to extract letters from a column
 Create function dbo.fn_getAlphabet
 (
 @input VARCHAR(50)
@@ -110,7 +33,7 @@ RETURN @input
 END
 
 
-
+--Function 3-- Create a function to remove rtftags and extract text.
 If exists (Select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[RTF2TXT]') AND type in (N'FN', N'IF', N'FS', N'FT'))---RTF2TXT
 DROP FUNCTION [dbo].RTF2TXT
 GO
