@@ -1,4 +1,4 @@
---STEP 1
+--STEP 1 Create a view containing all information in the Client Table
 CREATE VIEW CLIENT AS
 SELECT DISTINCT c.ID AS 'Client External ID', ct.Name+' '+ c.FirstName AS FirstName, c.LastName, dbo.getnumeric(c.PostalLine4) AS Phone,
 dbo.fn_getAlphabet(c.PostalLine4) AS City
@@ -7,7 +7,7 @@ Inner join dbo.CustomerTitle ct
 ON ct.ID=c.TitleID
 GO
 
---STEP 2
+--STEP 2 Create a view containing all information in the Client_Optional Table
 CREATE VIEW CLIENT_Optional AS
 SELECT  ' ' AS Email, c.PostalLine4 AS Address, ' ' AS Birthdate, ctm.Description + ' ' + cs.Description AS 'Internal Notes',
 c.ID AS 'Personal ID Number'
@@ -21,7 +21,7 @@ ON ctm.ID=c.TermsID
 Inner join dbo.Patient p
 on p.CustomerID= c.ID
 GO
---STEP 3
+--STEP 3 Create a view containing all information in the Pet Table
 CREATE VIEW PET AS
 SELECT p.ID AS 'Pet External ID', p.Name, b.Name AS Breed, s.Name AS Species, p.PatientGenderID AS SEX, 
 p.Sterile AS 'Reproductive Status', CAST(p.DOB AS date) AS Birthdate,c.ID
@@ -31,7 +31,7 @@ Inner join dbo.Specie s ON s.ID= b.SpecieID
 Inner Join dbo.Customer c ON c.ID= p.CustomerID
 GO
 
---STEP 4
+--STEP 4 Create a view containing all information in the Pet_Optional Table
 CREATE VIEW PET_Optional AS
 SELECT DISTINCT pn.ID AS 'Health Card Number', p.ColourMarkings AS Color, ' ' AS 'Distinctive Marks', ' ' as Insurance#, ' ' as 'Microchip ID',
 p.Photo AS 'Passport Series', p.ID AS 'Internal Number', ' ' AS Allergies, 
@@ -43,7 +43,7 @@ Inner join dbo.Specie s ON s.ID= b.SpecieID
 Inner join dbo.PatientNote pn ON pn.PatientID = p.ID
 GO
 
---STEP 5
+--STEP 5 Use Left join to concatenate all views into the required final format
 SELECT DISTINCT * FROM CLIENT
 LEFT JOIN CLIENT_Optional
 ON CLIENT.[Client External ID]= CLIENT_Optional.[Personal ID Number]
